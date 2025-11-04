@@ -46,6 +46,8 @@ dependencies {
     runtimeOnlyNonPublishable(gtnhdev("waila"))
     runtimeOnlyNonPublishable(gtnhdev("EnderCore"))
 
+    runtimeOnlyNonPublishable('com.github.Aimerny:GT-Not-Leisure:testv2')
+
     devOnlyNonPublishable("ganymedes01.etfuturum:Et-Futurum-Requiem:" + v("Et-Futurum-Requiem"))
 
     implementation("thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev") { transitive = false }
