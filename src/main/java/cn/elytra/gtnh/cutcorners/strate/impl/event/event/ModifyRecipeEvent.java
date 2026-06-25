@@ -131,7 +131,7 @@ public abstract class ModifyRecipeEvent<T> extends Event {
 
         public void setMinComputation(int minComputation) {
             recipe.mSpecialValue &= MASK;
-            recipe.mSpecialValue &= minComputation & MASK << 16;
+            recipe.mSpecialValue |= (minComputation & MASK) << 16;
         }
     }
 

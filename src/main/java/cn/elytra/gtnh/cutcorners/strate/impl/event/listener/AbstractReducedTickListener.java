@@ -58,6 +58,11 @@ public abstract class AbstractReducedTickListener {
     }
 
     @SubscribeEvent
+    public void onGTRecipeDuration(GetDurationEvent.GT_RecipeDuration e) {
+        transform(e);
+    }
+
+    @SubscribeEvent
     public void onTCFurnaceSmelting(GetDurationEvent.TC_FurnaceSmeltingTime e) {
         transform(e);
     }

@@ -31,8 +31,11 @@ public class CCMixinLoader implements ILateMixinLoader {
             mixins.add("gregtech.GT_DrillingLogicDelegateMixin");
             mixins.add("gregtech.EyeOfHarmonyRecipeAccessor");
             mixins.add("gregtech.EyeOfHarmonyFrontendFixMixin");
+            mixins.add("gregtech.RecipeMapBackendAccessor");
+            mixins.add("gregtech.NonGTRecipeBackendMixin");
 
             mixins.add("gregtech.MTESteamFurnaceMixin");
+            mixins.add("gregtech.MTESteamTurbineMixin");
         }
         if (Mods.Thaumcraft.isLoaded()) {
             mixins.add("thaumcraft.TileAlchemyFurnaceMixin");
@@ -49,9 +52,14 @@ public class CCMixinLoader implements ILateMixinLoader {
             mixins.add("railcraft.BlastFurnaceRecipeAccessor");
 
             mixins.add("railcraft.TileCokeOvenMixin");
+            mixins.add("railcraft.TileSteamOvenMixin");
+            mixins.add("railcraft.TileTankWaterMixin");
         }
         if (Mods.EtFuturumRequiem.isLoaded()) {
           mixins.add("et_futurum_requiem.BlastFurnaceAndSmoker_Mixin");
+        }
+        if (Mods.GTNotLeisure.isLoaded()) {
+            mixins.add("gtnl.RecipeLoaderMixin");
         }
 
         return mixins;

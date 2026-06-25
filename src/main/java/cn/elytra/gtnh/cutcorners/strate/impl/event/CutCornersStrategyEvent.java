@@ -29,6 +29,11 @@ public class CutCornersStrategyEvent implements ICutCornerStrategy {
     }
 
     @Override
+    public void updateGTRecipe(RecipeMap<?> recipeMap, GTRecipe recipe) {
+        updateGTRecipe(recipe);
+    }
+
+    @Override
     public void updateAssemblyLineRecipeList(List<GTRecipe.RecipeAssemblyLine> recipes) {
         recipes.forEach(this::updateAssemblyLineRecipe);
     }
@@ -73,6 +78,10 @@ public class CutCornersStrategyEvent implements ICutCornerStrategy {
 
     public int getMaxProgressTime(Object instance, int original) {
         return CutCornersEventDispatchHelper.getGTMaxProgressTime(instance, original);
+    }
+
+    public int getGTRecipeDuration(Object instance, RecipeMap<?> recipeMap, int original) {
+        return CutCornersEventDispatchHelper.getGTRecipeDuration(instance, recipeMap, original);
     }
 
     public int getThaumcraftFurnaceSmeltingTime(int original) {

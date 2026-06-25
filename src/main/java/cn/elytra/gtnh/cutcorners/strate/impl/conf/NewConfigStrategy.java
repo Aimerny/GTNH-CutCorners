@@ -30,9 +30,17 @@ public class NewConfigStrategy implements ICutCornerStrategy {
         this.config = Objects.requireNonNull(config);
     }
 
+    private boolean shouldSkipGTRecipeMap(RecipeMap<?> recipeMap) {
+        if (recipeMap == null) {
+            return config.whitelistMode();
+        }
+        return ArrayUtils.contains(config.getGregTechBlacklistedRecipeMaps(), recipeMap.unlocalizedName)
+            ^ config.whitelistMode();
+    }
+
     @Override
     public void updateGTRecipeMap(RecipeMap<?> recipeMap) {
-        if (ArrayUtils.contains(config.getGregTechBlacklistedRecipeMaps(), recipeMap.unlocalizedName) ^ config.whitelistMode()) {
+        if (shouldSkipGTRecipeMap(recipeMap)) {
             CutCorners.LOG.info("Skipped GT RecipeMap: {}", recipeMap.unlocalizedName);
             return;
         }
@@ -40,12 +48,32 @@ public class NewConfigStrategy implements ICutCornerStrategy {
         CutCorners.LOG.info("Hacking GT Recipe Map: {}", recipeMap.unlocalizedName);
 
         for (GTRecipe recipe : recipeMap.getAllRecipes()) {
-            recipe.mDuration = config.getDurationModification().getModifiedValue(recipe.mDuration, 1);
-
-            if (config.useAllLVRecipes()) {
-                recipe.mEUt = (int) TierEU.RECIPE_LV;
-            }
+            updateGTRecipeUnchecked(recipe);
         }
+    }
+
+    @Override
+    public void updateGTRecipe(RecipeMap<?> recipeMap, GTRecipe recipe) {
+        if (shouldSkipGTRecipeMap(recipeMap)) {
+            return;
+        }
+
+        updateGTRecipeUnchecked(recipe);
+    }
+
+    private void updateGTRecipeUnchecked(GTRecipe recipe) {
+        recipe.mDuration = config.getDurationModification().getModifiedValue(recipe.mDuration, 1);
+
+        if (config.useAllLVRecipes()) {
+            recipe.mEUt = (int) TierEU.RECIPE_LV;
+        }
+    }
+
+    @Override
+    public int getGTRecipeDuration(Object instance, RecipeMap<?> recipeMap, int original) {
+        return shouldSkipGTRecipeMap(recipeMap)
+            ? original
+            : config.getDurationModification().getModifiedValue(original, 1);
     }
 
     @Override
@@ -58,11 +86,24 @@ public class NewConfigStrategy implements ICutCornerStrategy {
         CutCorners.LOG.info("Hacking GregTech Assembly Line Recipes");
 
         for (GTRecipe.RecipeAssemblyLine recipe : recipes) {
-            recipe.mDuration = config.getDurationModification().getModifiedValue(recipe.mDuration, 1);
+            updateAssemblyLineRecipeUnchecked(recipe);
+        }
+    }
 
-            if (config.useAllLVRecipes()) {
-                recipe.mEUt = (int) TierEU.RECIPE_LV;
-            }
+    @Override
+    public void updateAssemblyLineRecipe(GTRecipe.RecipeAssemblyLine recipe) {
+        if (config.doesBlacklistAssemblyLine()) {
+            return;
+        }
+
+        updateAssemblyLineRecipeUnchecked(recipe);
+    }
+
+    private void updateAssemblyLineRecipeUnchecked(GTRecipe.RecipeAssemblyLine recipe) {
+        recipe.mDuration = config.getDurationModification().getModifiedValue(recipe.mDuration, 1);
+
+        if (config.useAllLVRecipes()) {
+            recipe.mEUt = (int) TierEU.RECIPE_LV;
         }
     }
 
@@ -76,10 +117,23 @@ public class NewConfigStrategy implements ICutCornerStrategy {
         CutCorners.LOG.info("Hacking EOH Recipes");
 
         for (EyeOfHarmonyRecipe recipe : recipeMap.values()) {
-            var recipeAcc = (EyeOfHarmonyRecipeAccessor) recipe;
-            recipeAcc.set_miningTimeSeconds(config.getDurationModification().getModifiedValue((int) recipeAcc.get_miningTimeSeconds(), 1));
-            recipeAcc.set_euStartCost(config.getEOHStartEuCostModification().getModifiedValue((int) recipeAcc.get_euStartCost(), 1));
+            updateEOHRecipeUnchecked(recipe);
         }
+    }
+
+    @Override
+    public void updateEOHRecipe(EyeOfHarmonyRecipe recipe) {
+        if (config.doesBlacklistEyeOfHarmony()) {
+            return;
+        }
+
+        updateEOHRecipeUnchecked(recipe);
+    }
+
+    private void updateEOHRecipeUnchecked(EyeOfHarmonyRecipe recipe) {
+        var recipeAcc = (EyeOfHarmonyRecipeAccessor) recipe;
+        recipeAcc.set_miningTimeSeconds(config.getDurationModification().getModifiedValue((int) recipeAcc.get_miningTimeSeconds(), 1));
+        recipeAcc.set_euStartCost(config.getEOHStartEuCostModification().getModifiedValue((int) recipeAcc.get_euStartCost(), 1));
     }
 
     @Override
@@ -92,16 +146,31 @@ public class NewConfigStrategy implements ICutCornerStrategy {
         CutCorners.LOG.info("Hacking Research Station Recipes");
 
         for (GTRecipe recipe : recipeMap.getAllRecipes()) {
-            recipe.mDuration = config.getDurationModification().getModifiedValue(recipe.mDuration, 1);
-            recipe.mSpecialValue = ResearchStationHelper.getSpecialValueAtAmp(
-                recipe.mSpecialValue,
-                config.getResearchStationAmpModification().getModifiedValue(recipe.mSpecialValue, 1)
-            );
-            recipe.mSpecialValue = ResearchStationHelper.getSpecialValueAtMinComputation(
-                recipe.mSpecialValue,
-                config.getResearchStationMinComputationModification().getModifiedValue(recipe.mSpecialValue, 1)
-            );
+            updateResearchStationRecipeUnchecked(recipe);
         }
+    }
+
+    @Override
+    public void updateResearchStationRecipe(GTRecipe recipe) {
+        if (config.doesBlacklistResearchStation()) {
+            return;
+        }
+
+        updateResearchStationRecipeUnchecked(recipe);
+    }
+
+    private void updateResearchStationRecipeUnchecked(GTRecipe recipe) {
+        recipe.mDuration = config.getDurationModification().getModifiedValue(recipe.mDuration, 1);
+        int amp = ResearchStationHelper.getAmp(recipe.mSpecialValue);
+        recipe.mSpecialValue = ResearchStationHelper.getSpecialValueAtAmp(
+            recipe.mSpecialValue,
+            config.getResearchStationAmpModification().getModifiedValue(amp, 1)
+        );
+        int minComputation = ResearchStationHelper.getMinComputation(recipe.mSpecialValue);
+        recipe.mSpecialValue = ResearchStationHelper.getSpecialValueAtMinComputation(
+            recipe.mSpecialValue,
+            config.getResearchStationMinComputationModification().getModifiedValue(minComputation, 1)
+        );
     }
 
     @Override
@@ -127,6 +196,11 @@ public class NewConfigStrategy implements ICutCornerStrategy {
     }
 
     @Override
+    public long getGTSteamTurbineOutputAmperage(Object instance, long original) {
+        return config.getGTSteamTurbineOutputAmperage();
+    }
+
+    @Override
     public int getThaumcraftFurnaceSmeltingTime(int original) {
         return ICutCornerStrategy.super.getThaumcraftFurnaceSmeltingTime(original);
     }
@@ -140,6 +214,7 @@ public class NewConfigStrategy implements ICutCornerStrategy {
     public void updateRailcraftCokeOvenRecipe(ICokeOvenRecipe recipe) {
         if (config.doesBlacklistRailcraft()) {
             CutCorners.LOG.info("Skipped Railcraft Coke Oven Recipes");
+            return;
         }
 
         CutCorners.LOG.info("Hacking Railcraft Coke Oven Recipes");
@@ -152,11 +227,26 @@ public class NewConfigStrategy implements ICutCornerStrategy {
     public void updateRailcraftBlastFurnaceRecipe(IBlastFurnaceRecipe recipe) {
         if (config.doesBlacklistRailcraft()) {
             CutCorners.LOG.info("Skipped Railcraft Blast Furnace Recipes");
+            return;
         }
 
         CutCorners.LOG.info("Hacking Railcraft Blast Furnace Recipes");
 
         var recipeAcc = (BlastFurnaceRecipeAccessor) recipe;
         recipeAcc.set_cookTime(config.getDurationModification().getModifiedValue(recipeAcc.get_cookTime(), 1));
+    }
+
+    @Override
+    public float getRailcraftWaterTankRefillRate(Object instance, float original) {
+        return config.doesBlacklistRailcraft()
+            ? original
+            : original * config.getRailcraftWaterTankRefillRateMultiplier();
+    }
+
+    @Override
+    public int getRailcraftSteamOvenCookStep(Object instance, int original) {
+        return config.doesBlacklistRailcraft()
+            ? original
+            : Math.max(1, (int) (original * config.getRailcraftSteamOvenSpeedMultiplier()));
     }
 }

@@ -1,7 +1,9 @@
 package cn.elytra.gtnh.cutcorners.strate.impl.event.event;
 
 import cpw.mods.fml.common.eventhandler.Event;
+import gregtech.api.recipe.RecipeMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class GetDurationEvent extends Event implements IHasDuration {
 
@@ -51,6 +53,20 @@ public abstract class GetDurationEvent extends Event implements IHasDuration {
         public GT_MaxProgressTime(@NotNull Object target, int duration) {
             super(duration);
             this.target = target;
+        }
+    }
+
+    public static class GT_RecipeDuration extends GetDurationEvent {
+        @NotNull
+        public final Object target;
+
+        @Nullable
+        public final RecipeMap<?> recipeMap;
+
+        public GT_RecipeDuration(@NotNull Object target, @Nullable RecipeMap<?> recipeMap, int duration) {
+            super(duration);
+            this.target = target;
+            this.recipeMap = recipeMap;
         }
     }
 

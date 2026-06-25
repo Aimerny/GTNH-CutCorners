@@ -8,3 +8,15 @@ plugins {
 jar {
     archiveVersion = project.version + "+" + project.property("elytra.manifest.version")
 }
+
+tasks.register("copyJarWithoutSuffix", Copy) {
+    dependsOn tasks.named("reobfJar")
+    def jarTask = tasks.named("jar").get()
+    from(layout.buildDirectory.file("libs/${jarTask.archiveBaseName.get()}-${jarTask.archiveVersion.get()}.jar"))
+    into layout.buildDirectory.dir("libs")
+    rename { "${project.property("modId")}.jar" }
+}
+
+tasks.named("build") {
+    finalizedBy tasks.named("copyJarWithoutSuffix")
+}

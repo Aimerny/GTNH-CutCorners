@@ -84,7 +84,7 @@ public class CutCorners {
                 .metadata(GTRecipeConstants.RESEARCH_ITEM, new ItemStack(Items.apple))
                 .metadata(GTRecipeConstants.SCANNING, new Scanning(1, TierEU.RECIPE_LV))
                 .itemInputs(
-                    ItemList.AdvDebugStructureWriter.get(1),
+                    ItemList.DebugStructureWriter.get(1),
                     new Object[] {OrePrefixes.circuit.get(Materials.UXV), 16},
                     new Object[] {OrePrefixes.circuit.get(Materials.UXV), 16},
                     new Object[] {OrePrefixes.circuit.get(Materials.UXV), 16}

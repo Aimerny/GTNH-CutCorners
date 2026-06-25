@@ -5,9 +5,11 @@ import cn.elytra.gtnh.cutcorners.strate.impl.event.event.GetDurationEvent;
 import cn.elytra.gtnh.cutcorners.strate.impl.event.event.ModifyRecipeEvent;
 import cn.elytra.gtnh.cutcorners.strate.impl.event.listener.SingleUseListener;
 import cpw.mods.fml.common.eventhandler.EventBus;
+import gregtech.api.recipe.RecipeMap;
 import gregtech.api.util.GTRecipe;
 import mods.railcraft.api.crafting.IBlastFurnaceRecipe;
 import mods.railcraft.api.crafting.ICokeOvenRecipe;
+import org.jetbrains.annotations.Nullable;
 import tectech.recipe.EyeOfHarmonyRecipe;
 
 /**
@@ -83,6 +85,12 @@ public class CutCornersEventDispatchHelper {
 
     public static int getGTMaxProgressTime(Object target, int duration) {
         GetDurationEvent.GT_MaxProgressTime e = new GetDurationEvent.GT_MaxProgressTime(target, duration);
+        CC_EVENTS.post(e);
+        return e.getDuration();
+    }
+
+    public static int getGTRecipeDuration(Object target, @Nullable RecipeMap<?> recipeMap, int duration) {
+        GetDurationEvent.GT_RecipeDuration e = new GetDurationEvent.GT_RecipeDuration(target, recipeMap, duration);
         CC_EVENTS.post(e);
         return e.getDuration();
     }

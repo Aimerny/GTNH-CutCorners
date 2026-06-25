@@ -1,6 +1,5 @@
 package cn.elytra.gtnh.cutcorners.mixins.late.gregtech;
 
-import gregtech.api.util.GTUtility;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -16,7 +15,7 @@ public class EyeOfHarmonyFrontendFixMixin {
             // so we should use normal one instead if it happens.
             return TTUtility.toExponentForm(number);
         } else {
-            return GTUtility.formatNumbers(number);
+            return Long.toString(number);
         }
     }
 

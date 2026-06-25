@@ -83,7 +83,7 @@ public class CutCornersConfig {
     }
 
     public boolean doesBlacklistRailcraft() {
-        return this.config.getBoolean("blacklistRailcraft", CATEGORY_BLACKLIST, false, "Blacklist the Railcraft furnaces (Coke Oven and Blast Furnace).");
+        return this.config.getBoolean("blacklistRailcraft", CATEGORY_BLACKLIST, false, "Blacklist Railcraft machines.");
     }
 
     public boolean doesBlacklistAssemblyLine() {
@@ -124,12 +124,30 @@ public class CutCornersConfig {
 
     // endregion
 
+    // region Railcraft Specific
+
+    public static final String CATEGORY_RAILCRAFT_SPEC = "railcraft-spec";
+
+    public float getRailcraftSteamOvenSpeedMultiplier() {
+        return this.config.getFloat("steamOvenSpeedMultiplier", CATEGORY_RAILCRAFT_SPEC, 1.0F, 0.0001F, Float.MAX_VALUE, "Multiplier of Railcraft Steam Oven speed.");
+    }
+
+    public float getRailcraftWaterTankRefillRateMultiplier() {
+        return this.config.getFloat("waterTankRefillRateMultiplier", CATEGORY_RAILCRAFT_SPEC, 1.0F, 0.0001F, Float.MAX_VALUE, "Multiplier of Railcraft Water Tank refill amount.");
+    }
+
+    // endregion
+
     // region GregTech Recipe Specific
 
     public static final String CATEGORY_GREGTECH_SPEC = "gregtech-spec";
 
     public boolean useAllLVRecipes() {
         return this.config.getBoolean("allLVRecipes", CATEGORY_GREGTECH_SPEC, false, "Make all GregTech recipes to LV-level EU/T requirement");
+    }
+
+    public int getGTSteamTurbineOutputAmperage() {
+        return this.config.getInt("steamTurbineOutputAmperage", CATEGORY_GREGTECH_SPEC, 8, 1, Integer.MAX_VALUE, "Output amperage of GregTech single-block Steam Turbines.");
     }
 
     public boolean useUpdateResearchTime() {

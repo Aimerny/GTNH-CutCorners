@@ -42,6 +42,27 @@ public interface ICutCornerStrategy {
     }
 
     /**
+     * Modify a single {@link GTRecipe} with its owning {@link RecipeMap} context.
+     * It should be invoked once per recipe on game load completion.
+     */
+    default void updateGTRecipe(RecipeMap<?> recipeMap, GTRecipe recipe) {
+        updateGTRecipe(recipe);
+    }
+
+    /**
+     * Return the duration of dynamically generated GregTech recipes.
+     * <p>
+     * Some non-GT recipe map backends, such as Furnace, EFR Blasting and EFR Smoking, create temporary recipes during
+     * recipe lookup instead of storing recipes in the recipe map.
+     *
+     * @param instance  the reference instance creating the temporary recipe.
+     * @param recipeMap the recipe map of the generated recipe.
+     */
+    default int getGTRecipeDuration(Object instance, RecipeMap<?> recipeMap, int original) {
+        return original;
+    }
+
+    /**
      * Modify the {@link GTRecipe.RecipeAssemblyLine} list.
      */
     default void updateAssemblyLineRecipeList(List<GTRecipe.RecipeAssemblyLine> recipes) {}
@@ -128,6 +149,15 @@ public interface ICutCornerStrategy {
     }
 
     /**
+     * Return the output amperage of GregTech single-block Steam Turbines.
+     *
+     * @param instance the reference instance of the GregTech Steam Turbine.
+     */
+    default long getGTSteamTurbineOutputAmperage(Object instance, long original) {
+        return original;
+    }
+
+    /**
      * Return the smelting time of Thaumcraft Furnaces.
      * It will be invoked on TC furnace updates.
      */
@@ -155,6 +185,26 @@ public interface ICutCornerStrategy {
      * It should be invoked once per recipe on game load completion.
      */
     default void updateRailcraftBlastFurnaceRecipe(IBlastFurnaceRecipe recipe) {
+    }
+
+    /**
+     * Return the base refill amount of Railcraft Water Tanks.
+     * It will be invoked before biome and weather modifiers are applied.
+     *
+     * @param instance the reference instance of the Railcraft Water Tank.
+     */
+    default float getRailcraftWaterTankRefillRate(Object instance, float original) {
+        return original;
+    }
+
+    /**
+     * Return the progress added per work step of Railcraft Steam Ovens.
+     * Railcraft runs the work step every 16 ticks by default.
+     *
+     * @param instance the reference instance of the Railcraft Steam Oven.
+     */
+    default int getRailcraftSteamOvenCookStep(Object instance, int original) {
+        return original;
     }
 
 }
